@@ -5,15 +5,12 @@ import com.practica.integracion.DAO.GenericDAO;
 import com.practica.integracion.DAO.User;
 import com.practica.integracion.manager.SystemManager;
 import com.practica.integracion.manager.SystemManagerException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -24,8 +21,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TestValidUser {
@@ -43,6 +40,7 @@ public class TestValidUser {
 
 
 	User user=new User("21", "Manuel", "Bollain", "calle", roles);//Esta  no hace falta mock, ya que si la podemos instanciar
+	private User use;
 
 
 	@Test
@@ -67,6 +65,8 @@ public class TestValidUser {
 
 	}
 
+
+	/*	StopRemoteSystem	*/
 	@Test
 	@DisplayName("Test stopRemoteSystem")
 	public void testStopRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
@@ -85,5 +85,83 @@ public class TestValidUser {
 		inOrder.verify(genericDAO).getSomeData(user,"where id=21");
 
 	}
+
+
+
+	/*	AddRemoteSystem	*/
+	@Test
+	@DisplayName("Test addRemoteSystem")
+	public void testAddRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
+
+		Object remote = null;
+		when(authDAO.getAuthData("21")).thenReturn(user);
+		when(genericDAO.updateSomeData(user,remote)).thenReturn(true);
+
+		systemManager.addRemoteSystem(user.getId(),remote);
+
+		InOrder inOrder = inOrder(authDAO, genericDAO);
+		inOrder.verify(authDAO).getAuthData("21");
+		inOrder.verify(genericDAO).updateSomeData(user,remote);
+
+
+	}
+
+	@Test
+	@DisplayName("Test Fallo al añadir un remote")
+	public void testFailAddRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
+
+		Object remote = null;
+		when(authDAO.getAuthData("21")).thenReturn(user);
+		when(genericDAO.updateSomeData(user,remote)).thenReturn(false);
+
+		Exception thrown = assertThrows(
+				Exception.class,
+				() -> systemManager.addRemoteSystem(user.getId(),remote),
+				"Fail to add new remote system"
+		);
+		assertTrue(thrown.getMessage().contains("cannot add remote"));
+
+		InOrder inOrder = inOrder(authDAO, genericDAO);
+		inOrder.verify(authDAO).getAuthData("21");
+		inOrder.verify(genericDAO).updateSomeData(user,remote);
+	}
+
+
+
+
+	/*	DeleteRemoteSystem	*/
+	@Test
+	@DisplayName("Test deleteRemoteSystem")
+	public void testDeleteRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
+
+		when(genericDAO.deleteSomeData(any(),any())).thenReturn(true);
+		systemManager.deleteRemoteSystem("1","1");
+
+		InOrder inOrder = inOrder(authDAO, genericDAO);
+		//inOrder.verify(authDAO).getAuthData("1");
+		inOrder.verify(genericDAO).deleteSomeData(any(),any());
+
+	}
+
+	@Test
+	@DisplayName("Test fallo al borrar un servicio")
+	public void testFailDeleteRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
+
+		when(genericDAO.deleteSomeData(any(),any())).thenReturn(false);
+
+		SystemManagerException thrown = assertThrows(
+				SystemManagerException.class,
+				() -> systemManager.deleteRemoteSystem("1","1"),
+				"Fail to delete remote system"
+		);
+		assertTrue(thrown.getMessage().contains("cannot delete remote: does remote exists?"));
+
+		InOrder inOrder = inOrder(authDAO, genericDAO);
+		inOrder.verify(genericDAO).deleteSomeData(any(),any());
+
+	}
+
+
+
 
 }
