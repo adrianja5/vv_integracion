@@ -33,11 +33,7 @@ public class TestValidUser {
 	@Mock	//Estos no tienen nada implementado
 	GenericDAO genericDAO;
 
-	@InjectMocks //Los metemos en la clase creo, o algo así
-	SystemManager systemManager;
-
 	List<Object> roles=new LinkedList<Object>();
-
 
 	User user=new User("21", "Manuel", "Bollain", "calle", roles);//Esta  no hace falta mock, ya que si la podemos instanciar
 	private User use;
@@ -53,6 +49,7 @@ public class TestValidUser {
 		when(authDAO.getAuthData("21")).thenReturn(user);//Es decir, cuando se llame a .getAuth desde StartRemote y se envie el id=21 nos devolverá a Manuel
 		when(genericDAO.getSomeData(user,"where id=21")).thenReturn(roles);//cuadno se llame a getSomeData
 
+		SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 		Collection<Object> salida= systemManager.startRemoteSystem("21","21");
 
 		assertEquals(salida,new ArrayList());//Como roles esta vacia
@@ -74,6 +71,7 @@ public class TestValidUser {
 		when(authDAO.getAuthData("21")).thenReturn(user);
 		when(genericDAO.getSomeData(user,"where id=21")).thenReturn(roles);
 
+		SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 		Collection<Object> salida= systemManager.startRemoteSystem("21","21");
 
 		assertEquals(salida,new ArrayList());//Como roles esta vacia lo comprobamos con una nueva lista
@@ -97,6 +95,7 @@ public class TestValidUser {
 		when(authDAO.getAuthData("21")).thenReturn(user);
 		when(genericDAO.updateSomeData(user,remote)).thenReturn(true);
 
+		SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 		systemManager.addRemoteSystem(user.getId(),remote);
 
 		InOrder inOrder = inOrder(authDAO, genericDAO);
@@ -114,6 +113,7 @@ public class TestValidUser {
 		when(authDAO.getAuthData("21")).thenReturn(user);
 		when(genericDAO.updateSomeData(user,remote)).thenReturn(false);
 
+		SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 		Exception thrown = assertThrows(
 				Exception.class,
 				() -> systemManager.addRemoteSystem(user.getId(),remote),
@@ -135,6 +135,8 @@ public class TestValidUser {
 	public void testDeleteRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
 
 		when(genericDAO.deleteSomeData(any(),any())).thenReturn(true);
+
+		SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 		systemManager.deleteRemoteSystem("1","1");
 
 		InOrder inOrder = inOrder(authDAO, genericDAO);
@@ -148,6 +150,7 @@ public class TestValidUser {
 	public void testFailDeleteRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
 
 		when(genericDAO.deleteSomeData(any(),any())).thenReturn(false);
+		SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 
 		SystemManagerException thrown = assertThrows(
 				SystemManagerException.class,
