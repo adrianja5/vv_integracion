@@ -71,7 +71,7 @@ public class TestInvalidUser {
     @DisplayName("Test startRemoteSystem Invalid User Detected")
     public void testInvalidStopRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
 
-        OperationNotSupportedException excep =new OperationNotSupportedException("No se puede hacer la operación");
+        OperationNotSupportedException excep =new OperationNotSupportedException("No se puede hacer la operación: Invalid User");
         when(authDAO.getAuthData("21")).thenReturn(user);
         when(genericDAO.getSomeData(user,"where id=21")).thenThrow(excep);
         SystemManager systemManager = new SystemManager(authDAO,genericDAO);
@@ -80,7 +80,7 @@ public class TestInvalidUser {
                 SystemManagerException.class,
                 () -> systemManager.stopRemoteSystem("21","21")
         );
-        assertTrue(thrown.getMessage().contains("No se puede hacer la operación"));//Comprobamos que la excepción sea esa
+        assertTrue(thrown.getMessage().contains("No se puede hacer la operación: Invalid User"));//Comprobamos que la excepción sea esa
 
 
         InOrder inOrder = inOrder(authDAO, genericDAO);
@@ -95,7 +95,7 @@ public class TestInvalidUser {
     public void testInvalidAddRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
 
         Object remote = null;
-        OperationNotSupportedException excep =new OperationNotSupportedException("No se puede hacer la operación de añadir");
+        OperationNotSupportedException excep =new OperationNotSupportedException("No se puede hacer la operación de añadir: Invalid User");
         when(authDAO.getAuthData("21")).thenReturn(user);
         when(genericDAO.updateSomeData(any(),any())).thenThrow(excep);
 
@@ -104,7 +104,7 @@ public class TestInvalidUser {
                 SystemManagerException.class,
                 () -> systemManager.addRemoteSystem("21",remote)
         );
-        assertTrue(thrown.getMessage().contains("No se puede hacer la operación de añadir"));//Comprobamos que la excepción sea esa
+        assertTrue(thrown.getMessage().contains("No se puede hacer la operación de añadir: Invalid User"));
 
 
         InOrder inOrder = inOrder(authDAO, genericDAO);
@@ -119,7 +119,7 @@ public class TestInvalidUser {
     public void testInvalidDeleteRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
 
 
-        OperationNotSupportedException excep =new OperationNotSupportedException("No se puede hacer la operación de borrar");
+        OperationNotSupportedException excep =new OperationNotSupportedException("No se puede hacer la operación de borrar: Invalid User");
         when(genericDAO.deleteSomeData(any(),any())).thenThrow(excep);
         SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 
@@ -127,7 +127,7 @@ public class TestInvalidUser {
                 SystemManagerException.class,
                 () -> systemManager.deleteRemoteSystem("1","1")
         );
-        assertTrue(thrown.getMessage().contains("No se puede hacer la operación de borrar"));
+        assertTrue(thrown.getMessage().contains("No se puede hacer la operación de borrar: Invalid User"));
 
         InOrder inOrder = inOrder(authDAO, genericDAO);
         inOrder.verify(genericDAO).deleteSomeData(any(),any());

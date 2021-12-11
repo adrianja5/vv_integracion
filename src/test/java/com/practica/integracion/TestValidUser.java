@@ -27,15 +27,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class TestValidUser {
 
-	@Mock	//Estos no tienen nada implementado
+	//Creación de los Mocks
+	@Mock
 	AuthDAO authDAO;
-
-	@Mock	//Estos no tienen nada implementado
+	@Mock
 	GenericDAO genericDAO;
 
 	List<Object> roles=new LinkedList<Object>();
 
-	User user=new User("21", "Manuel", "Bollain", "calle", roles);//Esta  no hace falta mock, ya que si la podemos instanciar
+	User user=new User("21", "Manuel", "Bollain", "calle", roles);
 	private User use;
 
 
@@ -43,20 +43,15 @@ public class TestValidUser {
 	@DisplayName("Test startRemoteSystem")
 	public void testStartRemoteSystem() throws OperationNotSupportedException, SystemManagerException {
 
-		//authDAO.getAuthData("21");// Esta función ahora mismo no está implementada por lo que tendríamos que "mockearla" .
-		//Cuando se llame a esta funcion desde dentro de startRemoteSistem devolvera lo que ahora pongamos en el when
-
-		when(authDAO.getAuthData("21")).thenReturn(user);//Es decir, cuando se llame a .getAuth desde StartRemote y se envie el id=21 nos devolverá a Manuel
-		when(genericDAO.getSomeData(user,"where id=21")).thenReturn(roles);//cuadno se llame a getSomeData
+		when(authDAO.getAuthData("21")).thenReturn(user);
+		when(genericDAO.getSomeData(user,"where id=21")).thenReturn(roles);
 
 		SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 		Collection<Object> salida= systemManager.startRemoteSystem("21","21");
 
-		assertEquals(salida,new ArrayList());//Como roles esta vacia
+		assertEquals(salida,new ArrayList());
 
-		//Esto para comprobar que primero se llama a Auth y luego a getSomeData
 		InOrder inOrder = inOrder(authDAO, genericDAO);
-		//following will make sure that firstMock was called before secondMock
 		inOrder.verify(authDAO).getAuthData("21");
 		inOrder.verify(genericDAO).getSomeData(user,"where id=21");
 
@@ -74,11 +69,9 @@ public class TestValidUser {
 		SystemManager systemManager = new SystemManager(authDAO,genericDAO);
 		Collection<Object> salida= systemManager.startRemoteSystem("21","21");
 
-		assertEquals(salida,new ArrayList());//Como roles esta vacia lo comprobamos con una nueva lista
+		assertEquals(salida,new ArrayList());
 
-		//Esto para comprobar que primero se llama a Auth y luego a getSomeData
 		InOrder inOrder = inOrder(authDAO, genericDAO);
-		//following will make sure that firstMock was called before secondMock
 		inOrder.verify(authDAO).getAuthData("21");
 		inOrder.verify(genericDAO).getSomeData(user,"where id=21");
 
@@ -140,7 +133,6 @@ public class TestValidUser {
 		systemManager.deleteRemoteSystem("1","1");
 
 		InOrder inOrder = inOrder(authDAO, genericDAO);
-		//inOrder.verify(authDAO).getAuthData("1");
 		inOrder.verify(genericDAO).deleteSomeData(any(),any());
 
 	}
