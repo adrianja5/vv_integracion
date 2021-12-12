@@ -1,10 +1,14 @@
-# Verificación y Validación del Software 2021
-GRUPO IWT41-5 
+# Práctica Integración
+**GRUPO**: IWT-41 Grupo 5
 
-## Instrucciones para utilizar este proyecto
+## Instrucciones para la ejecución de la práctica.
 
-* Cada alumno debe crearse un usuario de Github
-* Un miembro del grupo debe hacer fork a este proyecto y añadir al repositorio forkeado a sus compañeros de grupo y al profesor como colaboradores.
-* Descargar el proyecto utilizando git clone desde el terminal o desde el IDE.
-* Seguir las indicaciones del enunciado para realizar las pruebas de integración
-* Modificar este fichero añadiendo el número de grupo correspondiente y las instrucciones para ejecutar la práctica
+1. Se deberá tener instalado Maven en el ordenador así como tener debidamente configuradas las variables de entorno*.
+2. A través de la linea de comandos nevageremos hasta el directorio donde se encuentra nuestro proyecto haciendo uso del comando cd, por ejemplo **cd Donwloads\vv_integración**
+3. Una vez estemos dentro del directorio deseado deberemos ejecutar los siguientes comandos para ejecutar los test:
+  >- 3.1- mvn clean
+  >- 3.2- mvn compile
+  >- 3.3- mvn test
+  
+  
+*Tutorial para instalar maven en windows: https://dev.to/vanessa_corredor/instalar-manualmente-maven-en-windows-10-50pb
